@@ -2,9 +2,14 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from social_media.models import Post, Comment
+from social_media.models import Post, Comment, Hashtag
 from social_media.serializers import PostSerializer, PostDetailSerializer, PostListSerializer, LikeSerializer, \
-    CommentSerializer
+    CommentSerializer, HashtagSerializer
+
+
+class HashtagViewSet(viewsets.ModelViewSet):
+    queryset = Hashtag.objects.all()
+    serializer_class = HashtagSerializer
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -24,7 +29,7 @@ class PostViewSet(viewsets.ModelViewSet):
         return serializer.save(user=self.request.user)
 
     @action(detail=True, methods=["POST"])
-    def add_like(self, request, pk=None):
+    def add_like(self, request, pk):
         post = self.get_object()
         serializer = self.get_serializer(data={"post": post.id, "user": request.user.id})
         serializer.is_valid(raise_exception=True)
