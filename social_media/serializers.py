@@ -39,12 +39,13 @@ class PostListSerializer(serializers.ModelSerializer):
             "photos",
             "user",
             "hashtags",
-            "likes"
         )
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
-    comments = CommentSerializer(many=True)
+    comments = serializers.SlugRelatedField(
+        slug_field="comment", read_only=True, many=True
+    )
 
     class Meta:
         model = Post
@@ -55,5 +56,4 @@ class PostDetailSerializer(serializers.ModelSerializer):
             "photos",
             "user",
             "comments",
-            "likes"
         )
