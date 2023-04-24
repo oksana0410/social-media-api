@@ -1,13 +1,22 @@
 from rest_framework import viewsets, generics
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 
 from social_media.models import Post, Comment, Hashtag
-from social_media.serializers import PostSerializer, PostDetailSerializer, PostListSerializer, CommentSerializer, HashtagSerializer
+from social_media.permissions import IsAdminOrIfAuthenticatedReadOnly
+from social_media.serializers import (
+    PostSerializer,
+    PostDetailSerializer,
+    PostListSerializer,
+    CommentSerializer,
+    HashtagSerializer
+)
 
 
 class HashtagViewSet(viewsets.ModelViewSet):
     queryset = Hashtag.objects.all()
     serializer_class = HashtagSerializer
+    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
 class PostPagination(PageNumberPagination):
@@ -18,6 +27,7 @@ class PostPagination(PageNumberPagination):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -33,6 +43,7 @@ class PostViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
         post_id = self.kwargs.get("pk")
@@ -45,6 +56,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class CommentCreateView(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
         post_id = self.kwargs.get("pk")
