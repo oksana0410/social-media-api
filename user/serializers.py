@@ -5,16 +5,12 @@ from user.models import Follow
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    followed_user = UserSerializer()
-
     class Meta:
         model = Follow
-        fields = ("followed_user", "created_at",)
+        fields = ["id", "user", "followed_user", "created_at"]
 
 
 class UserSerializer(serializers.ModelSerializer):
-    following = FollowSerializer(many=True)
-    followers = FollowSerializer(many=True)
 
     class Meta:
         model = get_user_model()
@@ -27,8 +23,6 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "bio",
             "profile_picture",
-            "following",
-            "followers"
         )
         read_only_fields = ("is_staff",)
         extra_kwargs = {"password": {"write_only": True, "min_length": 5}}
@@ -46,3 +40,19 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
+
+class FollowerSerializer(serializers.ModelSerializer):
+    follower = UserSerializer()
+
+    class Meta:
+        model = Follow
+        fields = ("follower", "created_at")
+
+
+class FollowingSerializer(serializers.ModelSerializer):
+    followed_user = UserSerializer()
+
+    class Meta:
+        model = Follow
+        fields = ("followed_user", "created_at")

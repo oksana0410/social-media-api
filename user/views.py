@@ -8,7 +8,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from user.models import Follow
-from user.serializers import UserSerializer, FollowSerializer
+from user.serializers import UserSerializer, FollowingSerializer, FollowerSerializer, FollowSerializer
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -45,10 +45,11 @@ class UserViewSet(
     serializer_class = UserSerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
+    queryset = get_user_model().objects.all()
 
     def get_queryset(self):
         email = self.request.query_params.get("email")
-        queryset = get_user_model().objects.all()
+        queryset = self.queryset
 
         if email:
             queryset = queryset.filter(email__icontains=email)
@@ -93,7 +94,7 @@ class UnfollowUserView(APIView):
 
 
 class FollowingListView(generics.ListAPIView):
-    serializer_class = FollowSerializer
+    serializer_class = FollowingSerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -103,7 +104,7 @@ class FollowingListView(generics.ListAPIView):
 
 
 class FollowersListView(generics.ListAPIView):
-    serializer_class = FollowSerializer
+    serializer_class = FollowerSerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
 
